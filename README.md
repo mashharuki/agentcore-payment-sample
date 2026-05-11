@@ -137,3 +137,4 @@ export COINBASE_WALLET_SECRET="..."
 
 - [AWS Bedrock AgentCore Payments API Documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/payments.html)
 - [Coinbase CDP API](https://cdp.coinbase.com/docs/v1/api)
+- [Introducing Amazon Bedrock AgentCore Payments, Powered by x402 and Coinbase](https://www.coinbase.com/blog/introducing-amazon-bedrock-agentcore-payments-powered-by-x402-and-coinbase)
