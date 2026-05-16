@@ -12,16 +12,15 @@ load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
 
 
 REGION = os.getenv("REGION", "us-west-2")
-PAYMENT_MANAGER_ID = os.getenv("PAYMENT_MANAGER_ID", "paymentmanager-kkrc0cwayx")
-PAYMENT_CONNECTOR_ID = os.getenv("PAYMENT_CONNECTOR_ID", "test1234-wxxu1phdpx")
-PROVIDER_NAME = os.getenv("PAYMENT_PROVIDER_NAME", "coinbase-provider-main")
-
 
 def required_env(name: str) -> str:
     value = os.getenv(name)
     if not value:
         raise ValueError(f"missing env var: {name}")
     return value
+
+
+PROVIDER_NAME = os.getenv("PAYMENT_PROVIDER_NAME", "coinbase-provider-main")
 
 
 def find_provider_arn_by_name(control, provider_name: str) -> str | None:
@@ -65,6 +64,8 @@ def create_provider(control, provider_name: str, api_key_id: str, api_key_secret
 
 
 def main() -> int:
+    payment_manager_id = required_env("PAYMENT_MANAGER_ID")
+    payment_connector_id = required_env("PAYMENT_CONNECTOR_ID")
     control = boto3.client("bedrock-agentcore-control", region_name=REGION)
 
     # 1) provider resolve/create (idempotent)
@@ -120,8 +121,8 @@ def main() -> int:
 
     # 2) connector update
     update_res = control.update_payment_connector(
-        paymentManagerId=PAYMENT_MANAGER_ID,
-        paymentConnectorId=PAYMENT_CONNECTOR_ID,
+        paymentManagerId=payment_manager_id,
+        paymentConnectorId=payment_connector_id,
         type="CoinbaseCDP",
         credentialProviderConfigurations=[
             {"coinbaseCDP": {"credentialProviderArn": provider_arn}}
@@ -144,6 +145,8 @@ if __name__ == "__main__":
         print(f"ERROR: {e}")
         if isinstance(e, ValueError) and "missing env var:" in str(e):
             print("Set required env vars:")
+            print("  PAYMENT_MANAGER_ID")
+            print("  PAYMENT_CONNECTOR_ID")
             print("  COINBASE_API_KEY_ID")
             print("  COINBASE_API_KEY_SECRET")
             print("  COINBASE_WALLET_SECRET")
